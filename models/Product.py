@@ -21,12 +21,15 @@ class Product:
         return self.product_quantity > 0
     
     def rate_product(self, new_rating):
-        if 0 <= new_rating <= 5:
-            total_rating = self.product_rating * self.num_ratings
-            self.num_ratings += 1
-            self.product_rating = (total_rating + new_rating) / self.num_ratings
-        else:
-            raise ValueError("Rating must be between 0 and 5")
+        while True:
+            if 0 <= new_rating <= 5:
+                total_rating = self.product_rating * self.num_ratings
+                self.num_ratings += 1
+                self.product_rating = (total_rating + new_rating) / self.num_ratings
+                break
+            else:
+                print("Rating must be between 0 and 5")
+                continue
         
     def get_price_with_discount(self):
         if self.product_discount > 0:
@@ -34,10 +37,14 @@ class Product:
         return self.product_price
     
     def apply_discount(self, discount_percentage):
-        if 0 <= discount_percentage <= 100:
-            self.product_discount = discount_percentage
-        else:
-            raise ValueError("Discount percentage must be between 0 and 100")
+        while True:
+            if 0 <= discount_percentage <= 100:
+                self.product_discount = discount_percentage
+                break
+            else:
+                print("Discount percentage must be between 0 and 100")
+                continue
+        
         
     def __repr__(self):
         return f"<Product {self.product_name} (ID: {self.product_id}) - Price: ${self.product_price:.2f}>"

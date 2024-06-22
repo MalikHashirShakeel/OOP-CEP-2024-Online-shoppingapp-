@@ -24,10 +24,13 @@ class Cart:
                 del self.items[product.product_id]
     
     def update_quantity(self, product, quantity):
-        if quantity < 0:
-            raise ValueError("Quantity can't be nagative")
-        else:
-            self.cart[product.product_id] = quantity
+        while True:
+            if quantity < 0 :
+                print('Quantity cant be negative')
+                continue
+            else:
+                self.cart[product.product_id] = quantity
+                break
             
     def clear_cart(self):
         self.cart.clear()
