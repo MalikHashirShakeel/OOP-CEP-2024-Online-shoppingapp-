@@ -1,7 +1,7 @@
 class Product:
     def __init__(self,p_id,p_name,p_desc,p_price,p_qty,p_cat=None,p_img=None,p_rating=None,p_discount=None) -> None:
         self.product_id = p_id
-        self.poduct_desription = p_desc
+        self.product_description = p_desc
         self.product_price = p_price
         self.product_quantity = p_qty
         self.product_name = p_name
@@ -12,10 +12,15 @@ class Product:
         self.num_ratings = 0
         
     def update_stock(self, quantity):
-        if quantity >= 0:
-            self.product_quantity = quantity
-        else:
-            raise ValueError("Stock quantity cannot be negative")
+        while True:
+            if quantity >= 0:
+                self.product_quantity = quantity
+                break
+            elif quantity == 'b': #means to back
+                break
+            else:
+                print("Stock quantity cannot be negative")
+                continue
         
     def is_in_stock(self):
         return self.product_quantity > 0
@@ -26,6 +31,8 @@ class Product:
                 total_rating = self.product_rating * self.num_ratings
                 self.num_ratings += 1
                 self.product_rating = (total_rating + new_rating) / self.num_ratings
+                break
+            elif new_rating == 'b': #back option
                 break
             else:
                 print("Rating must be between 0 and 5")
@@ -40,6 +47,8 @@ class Product:
         while True:
             if 0 <= discount_percentage <= 100:
                 self.product_discount = discount_percentage
+                break
+            elif discount_percentage == 'b':
                 break
             else:
                 print("Discount percentage must be between 0 and 100")
