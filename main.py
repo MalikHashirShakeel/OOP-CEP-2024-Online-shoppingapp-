@@ -45,7 +45,8 @@ def main():
             # List all products
             print("\nAvailable Products:")
             for product in marketplace.list_products():
-                print(f"\n{product.product_id}. {product.product_name} Price: ${product.product_price:.2f}, Stock: {product.product_quantity}")
+                qty = 'Available' if product.product_quantity != 0 else 'Not Available'
+                print(f"\n{product.product_id}. {product.product_name}, Price: ${product.product_price:.2f}, Availability: {qty}")
 
         elif choice == 2:
             # Search for products
@@ -61,32 +62,48 @@ def main():
 
         elif choice == 3:
             # Add product to cart
-            try:
-                for product in marketplace.list_products():
-                    print(f"\n{product.product_id}. {product.product_name}, Price: ${product.product_price:.2f}, Stock: {product.product_quantity}")
-                product_id = int(input("\nEnter the product ID to add to the cart: "))
-                quantity = int(input("\nEnter the quantity: "))
+            while True:
+                try:
+                    for product in marketplace.list_products():
+                        qty = 'Available' if product.product_quantity != 0 else 'Not Available'
+                        print(f"\n{product.product_id}. {product.product_name}, Price: ${product.product_price:.2f}, Availability: {qty}")
+                    product_id = int(input("\nEnter the product ID to add to the cart:\n(0)Back\n>>"))
+                    if product_id == 0 :
+                        break
+                    quantity = int(input("\nEnter the quantity: "))
 
-                product = marketplace.get_product(product_id)
-                if product:
-                    cart.add_product(product, quantity)
-                    print(f"\nAdded {quantity} units of {product.product_name} to the cart.")
-                else:
-                    print("\nProduct not found. :( ")
-            except ValueError:
-                print("\nInvalid input. Please enter valid numbers for product ID and quantity.")
-            except Exception as e:
-                print(f"Error: {e}")
+                    product = marketplace.get_product(product_id)
+                    if product:
+                        if product.product_quantity >= quantity:
+                            cart.add_product(product, quantity)
+                            product.product_quantity = product.product_quantity - quantity
+                            print(f"\nAdded {quantity} units of {product.product_name} to the cart.")
+                            break
+                        else:
+                            raise ValueError('Low Stock!.')
+                    else:
+                        print("\nProduct not found. :( ")
+                except ValueError:
+                    print("\nInvalid input. Please enter valid numbers for product ID or quantity.")
+                except Exception as e:
+                    print(f"Error: {e}")
 
         elif choice == 4:
             # View cart
-            print("\nCart Contents:")
-            for product, quantity in cart.get_cart().items():
-                print(f"\n{product.product_name}: {quantity} units\n")
+            while True:
                 
-            if len(cart.get_cart()) == 0 : print('\n--NILL--')
-            
-            print(f"\nTotal price: ${cart.get_total_price():.2f}\n")
+                print("\nCart Contents:")
+                for product, quantity in cart.get_cart().items():
+                    print(f"\n{product.product_name}: {quantity} units\n")
+                    
+                if len(cart.get_cart()) == 0 : print('\n--NILL--')
+                
+                print(f"\nTotal price: ${cart.get_total_price():.2f}\n")
+                prompt = input('\n(b)Back\n>> ')
+                if prompt == 'b':
+                    break
+                else:
+                    print('Invalid Input')
 
         elif choice == 5:
             # Checkout (simplified)
