@@ -7,7 +7,7 @@ class Cart:
         self.cart = {}
         self.marketplace = marketplace
         
-    def add_product(self, product, quantity=1):
+    def add_product(self, product, quantity):
         while True:
             if quantity < 0:
                 print("Quantity can't be negative")
@@ -19,9 +19,14 @@ class Cart:
                     self.cart[product.product_id] = quantity
                 break
                 
-    def remove_product(self, product):
+    def remove_product(self, product,qty=0):
             if product.product_id in self.cart:
-                del self.cart[product.product_id]
+                if qty == 0:
+                    del self.cart[product.product_id]
+                else:
+                    self.cart[product.product_id] -= qty
+                    if self.cart[product.product_id] <= 0:
+                        del self.cart[product.product_id]
     
     def update_quantity(self, product, quantity):
         while True:
