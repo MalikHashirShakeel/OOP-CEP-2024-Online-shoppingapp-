@@ -18,15 +18,16 @@ class Cart:
                 else:
                     self.cart[product.product_id] = quantity
                 break
-                
-    def remove_product(self, product,qty=0):
-            if product.product_id in self.cart:
-                if qty == 0:
-                    del self.cart[product.product_id]
-                else:
-                    self.cart[product.product_id] -= qty
-                    if self.cart[product.product_id] <= 0:
-                        del self.cart[product.product_id]
+    
+    def remove_product(self, product, qty=0):
+        product_id = product if isinstance(product, int) else product.product_id
+        if product_id in self.cart:
+            if qty == 0:
+                del self.cart[product_id]
+            else:
+                self.cart[product_id] -= qty
+                if self.cart[product_id] <= 0:
+                    del self.cart[product_id]
     
     def update_quantity(self, product, quantity):
         while True:
@@ -56,3 +57,14 @@ class Cart:
     
     def get_product_by_id(self, product_id):
         return self.marketplace.get_product(product_id)
+    
+    def __iadd__(self, product_qty):
+        """Override the in-place addition operator (+=) to add product quantity to the cart"""
+        product, quantity = product_qty
+        self.add_product(product, quantity)
+        return self
+    
+    def __isub__(self, item):
+        product, quantity = item
+        self.remove_product(product, quantity)
+        return self

@@ -1,4 +1,5 @@
 import sqlite3
+import time
 
 CREATE_PRODUCTS_TABLE = 'CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, description TEXT , price FLOAT , quantity INTEGER);'
 
@@ -60,11 +61,11 @@ CHECK_ADMIN_USERNAME = 'SELECT COUNT(*) FROM admins WHERE username = ?'
 
 #<------------------USER HISTORY queries------------------->|
 
+# CREATE_USERS_HISTORY_TABLE = 'CREATE TABLE IF NOT EXISTS history (history_id INTEGER PRIMARY KEY, username TEXT, product_id TEXT, product_name TEXT, quantity TEXT, total FLOAT, date TEXT);'
+
 WRITE_HISTORY = 'INSERT INTO history (username, product_id, product_name, quantity, total, date) VALUES (?, ?, ?, ?, ?, ?);'
 
-CREATE_USERS_HISTORY_TABLE = 'CREATE TABLE IF NOT EXISTS history (history_id INTEGER PRIMARY KEY, username TEXT, product_id TEXT, product_name TEXT, quantity TEXT, total FLOAT, date TEXT);'
-
-GET_HISTORY = 'SELECT * FROM history WHERE username = ?'
+GET_HISTORY = 'SELECT * FROM history WHERE username = ?;'
 
 def connect():
     return sqlite3.connect('data.db')
@@ -206,14 +207,50 @@ def remove_admin(connection, id):
 
 #<------------------USER HISTORY queries------------------->|
 
-def create_users_history_table(connection):
-    with connection:
-        connection.execute(CREATE_USERS_HISTORY_TABLE)
-        
-def write_history(connection, username, product_id, product_name, quantity, total, date):
+def write_history(connection, username, product_id, product_name, quantity, total):
+    """
+    Write a record to the user's history.
+    
+    Parameters:
+    - connection: SQLite3 connection object.
+    - username: Username of the user.
+    - product_id: ID of the product.
+    - product_name: Name of the product.
+    - quantity: Quantity of the product.
+    - total: Total price.
+    - date: Timestamp of the transaction (auto-generated).
+    """
+    date = time.strftime("%Y-%m-%d %H:%M:%S")  # Generate the current timestamp
     with connection:
         connection.execute(WRITE_HISTORY, (username, product_id, product_name, quantity, total, date))
-        
+
+
+
 def get_history(connection, username):
+    """
+    Retrieve all history records for a given user.
+    
+    Parameters:
+    - connection: SQLite3 connection object.
+    - username: Username of the user.
+    
+    Returns:
+    - List of tuples, each representing a history record.
+    """
     with connection:
-        return connection.execute(GET_HISTORY, (username,)).fetchall()
+        cursor = connection.execute(GET_HISTORY, (username,))
+        return cursor.fetchall()
+    
+if __name__ == '__main__':
+    connection = connect()
+    connection.execute("""
+    CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        product_id TEXT,
+        product_name TEXT,
+        quantity INTEGER,
+        total REAL,
+        date TEXT
+    );
+    """)

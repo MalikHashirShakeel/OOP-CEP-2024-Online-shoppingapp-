@@ -31,21 +31,22 @@ class User:
         
     def __str__(self):
         return (
-            "---------------------------------\n"
-            "|         User Details          |\n"
-            "---------------------------------\n"
-            f"| ID         | {self.user_id}           |\n"
-            "---------------------------------\n"
-            f"| First Name | {self.__first_name}      |\n"
-            "---------------------------------\n"
-            f"| Last Name  | {self.__last_name}       |\n"
-            "---------------------------------\n"
-            f"| Username   | {self.__username}        |\n"
-            "---------------------------------\n"
-            f"| Email      | {self.__email}           |\n"
-            "---------------------------------\n"
-            f"| Phone      | {self.__phone_number}    |\n"
-            "---------------------------------\n"
+                    "---------------------------------\n"
+                    "|         User Details          |\n"
+                    "---------------------------------\n"
+                    f"| ID         | {self.user_id:<20} |\n"
+                    "---------------------------------\n"
+                    f"| First Name | {self.__first_name:<20} |\n"
+                    "---------------------------------\n"
+                    f"| Last Name  | {self.__last_name:<20} |\n"
+                    "---------------------------------\n"
+                    f"| Username   | {self.__username:<20} |\n"
+                    "---------------------------------\n"
+                    f"| Email      | {self.__email:<20} |\n"
+                    "---------------------------------\n"
+                    f"| Phone      | {self.__phone_number:<20} |\n"
+                    "---------------------------------\n"
+
         )
 
 
@@ -54,5 +55,19 @@ class User:
         first_name, last_name, username, email, password, phone_number = user_str.split(',')
         return User(first_name, last_name, username, email, password, phone_number)
     
-    def to_file_string(self):
-        return f"{self.__first_name},{self.__last_name},{self.__username},{self.__email},{self.__password},{self.__phone_number}"
+
+
+class Admin(User):
+    def __init__(self, username, password, privilege_level=0):
+        self.username = username
+        self.password = password
+        self.privilege_level = privilege_level
+        
+    def get_username(self):
+        return super().get_username()
+    
+    def get_password(self):
+        return super().get_password()
+    
+    def privileges(self):
+        return self.privilege_level

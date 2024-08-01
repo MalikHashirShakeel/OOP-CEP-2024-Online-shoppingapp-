@@ -13,8 +13,6 @@ from getpass import getpass
 class System:
 
     def __init__(self):
-        self.accounts = []
-        self.admins = []
         self.active_user = None
         connection = database.connect()
         connection.isolation_level = None
@@ -60,24 +58,26 @@ class System:
             if choice == '1':
                 
                 self.signup()
-                return True
             
             elif choice == '2':
-                
-                self.login()
-                # System.user_interface(self.active_user.get_username())
-                return 'User'
+               
+               self.active_user = None 
+               if self.login():
+                    return System.user_interface(self.active_user.get_username(),self.active_user)
+                # return 'User'
             
             elif choice == '3':
                 
+                self.active_user = None
                 self.admin_login()
                 print("\nLogged in as Admin succcessfully!")
                 self.admin_interface()
-                return 'Admin'
+                # return 'Admin'
             
             elif choice == '4':
                 print("\nExiting the application.")
-                return
+                self.active_user = None
+                break
             else:
                 print("\nInvalid choice. Please try again.")
 
@@ -136,10 +136,9 @@ class System:
             print("         Username Entry         ")
             print("==============================\n")
             username = input(
-                "Enter your username below:\n"
                 "(Note: The username must be between 5 and 15 characters long,\n"
                 "and can only contain letters and numbers.)\n"
-                "Username: "
+                "\nEnter Username: "
             ).lower().strip()
 
             # First, check if the username is empty
@@ -229,7 +228,7 @@ class System:
                 "\n🔒 Enter your password below:\n"
                 "\n(Note: The password must be between 8 and 15 characters long,\n"
                 "and include at least one letter, one number, and one special character.)\n"
-                "\nWould you like to generate a random password instead? (y): "
+                "\nTo Generate a random password enter (y) only:\n >> "
             ).strip()
 
             if not password:
@@ -310,7 +309,7 @@ class System:
                 print("❌ Please add letters in your email.")
             else:
                 print("❌ Invalid email.")
-            connection.close()
+            # connection.close()
 
 #-------------------------------------------------SIGNUP-------------------------------------------------------------------------
 
@@ -370,9 +369,8 @@ class System:
         print("|               Admin Dashboard                |")
         print("===============================================")
         print("|  1. See Users List                           |")
-        print("|  2. See Admins List                          |")
-        print("|  3. See Products List                        |")
-        print("|  4. Logout                                   |")
+        print("|  2. See Products List                        |")
+        print("|  3. Logout                                   |")
         print("===============================================")
         print("\n")
 
@@ -469,7 +467,7 @@ class System:
                 remove_admin(connection,number)
                 print("\nAdmin successfully deleted.")
                 input("\nPress any key to go back: ")
-                return
+                break
             elif confirmation == "n":
                 return
             else:
@@ -488,11 +486,10 @@ class System:
             if choice == '1':
                 self.display_users()
             elif choice == '2':
-                self.display_admins()
-            elif choice == '3':
                 System.admin_action_on_products()
-            elif choice == '4':
+            elif choice == '3':
                 print("\nLogging out from Admin interface........")
+                self.active_user = None
                 time.sleep(1)
                 break
             else:
@@ -536,16 +533,16 @@ class System:
 
 
     @staticmethod
-    def user_interface(active_user):
+    def user_interface(active_user,details):
         connection = database.connect()
         connection.isolation_level = None
         while True:
-            print("===============================================")
+            print("\n===============================================")
             print("|  1. Proceed To MaketPlace                   |")
             print("|  2. See History                             |")
-            print("|  3. Change Password                         |")
-            print("|  4. Exit                                    |")
-            print("===============================================")
+            print("|  3. View Personal Details                   |")
+            print("|  4. Logout                                  |")
+            print("===============================================\n")
             print("\n")
             c = input("Enter your choice: ")
             if c.isdigit():
@@ -554,20 +551,25 @@ class System:
                     return 'User'
                 elif c == 2:
                     print("\nFetching history....")
-                    history = database.get_history(connection,active_user)
-                    for h in history:
-                        print(h)
-                    input("\nPress any key to go back: ")
                     time.sleep(0.5)
+                    history = database.get_history(connection,active_user)
+                    
+                    headers = ["ID", "Username", "Product ID", "Product Name", "Quantity", "Total ($)", "Date"]
+                    print(f"{headers[0]:<5} {headers[1]:<15} {headers[2]:<12} {headers[3]:<20} {headers[4]:<10} {headers[5]:<10} {headers[6]:<20}")
+                    print("="*95)
+                    
+                    for record in history:
+                        id_, username, product_id, product_name, quantity, total, date = record
+                        print(f"{id_:<5} {username:<15} {product_id:<12} {product_name:<20} {quantity:<10} {total:<10.2f} {date:<20}")
+                    print('='*95)
                 elif c == 3:
-                    print('N/A')
+                    print(details)
+                    input("\nPress any key to continue: ")
                 elif c == 4:
-                    print("\nExiting the application.")
-                    # return 'Admin'
+                    print("\nExiting the interface.")
                     break
                 else:
                     print("\nInvalid choice. Please try again.")
-        # return 'User'
         
                 
 #--------------------------------------CLIENT CODE---------------------------------------------------------------

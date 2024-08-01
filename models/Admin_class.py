@@ -13,9 +13,6 @@ class Admin:
     def get_admin_password(self):
         return self.__password
     
-    def to_file_string(self):
-        return f"{self.__name},{self.__password}"
-    
     @staticmethod
     def from_str(admin_str):
         username, password = admin_str.split(',')

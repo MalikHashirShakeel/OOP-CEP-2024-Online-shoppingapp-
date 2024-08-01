@@ -131,9 +131,12 @@ def update_all_products(connection):
 
 def list_all_products(connection):
     products = database.get_all_products(connection)
+    print(f'{"ID":^10} : {"NAME":^20} | {"DESCRIPTION":^20} | {"PRICE":^10} | {"QUANTITY":^10}')
+    print("-" * 90) 
+
     for product in products:
-        print(f'     ID      :       NAME     |  DESCRIPTION |    PRICE     |   QUANTITY  ')
-        print(f'\n{product[0]} : {product[1]} | {product[2]} | {product[3]} | {product[4]}')
+        print(f'{product[0]:^10} : {product[1]:^20} | {product[2]:^20} | ${product[3]:^8.2f} | {product[4]:^10}')
+    print("-" * 90) 
 
 #<---------------------------------Marketplace exclusive function------------------------------------------------------>
 
@@ -162,8 +165,6 @@ def update_marketplace_products(connection, marketplace):
             
             # Update the product in the database
             database.update_product_in_db(connection, product_id, name, description, price, quantity)
-        
-        print("Finished updating all marketplace products.")
 
     except Exception as e:
         print(f"Error while updating marketplace products: {e}")
